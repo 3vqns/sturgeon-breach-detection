@@ -1,4 +1,5 @@
 import os
+from tqdm import tqdm
 def detect_breaches(video_path, conf_threshold, save_video):
     print("Running breach detection...")
     import cv2
@@ -16,6 +17,7 @@ def detect_breaches(video_path, conf_threshold, save_video):
     if not cap.isOpened():
         print(f"Error: cannot open video {video_path}")
         return
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -27,7 +29,14 @@ def detect_breaches(video_path, conf_threshold, save_video):
 
     timestamps = []
 
-    for frame_idx, result in enumerate(model.predict(source=video_path, conf=conf_threshold, stream=True, verbose=False)):
+    for frame_idx, result in enumerate(tqdm(
+        model.predict(source=video_path, conf=conf_threshold, stream=True, verbose=False),
+        total=total_frames,
+        desc="Processing frames",
+        unit="frame",
+        dynamic_ncols=True,
+        bar_format="{l_bar}{bar} ETA: {remaining}"
+    )):
         annotated_frame = result.plot()
         if save_video:
             writer.write(annotated_frame)
