@@ -5,7 +5,7 @@ def detect_breaches(video_path, conf_threshold, save_video):
     from ultralytics import YOLO
     import time
 
-    MODEL_PATH = "SturgeonBest.pt"
+    MODEL_PATH = "SturgeonBestv2.pt"
     SAVE_FRAMES = False
     OUTPUT_VIDEO_PATH = os.path.join("outputVideos", "output_with_boxes.mp4")
 
